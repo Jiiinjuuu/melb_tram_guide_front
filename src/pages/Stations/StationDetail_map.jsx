@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import 'leaflet/dist/leaflet.css';
 
@@ -25,6 +25,14 @@ const StopDetailPage = () => {
     iconAnchor: [15, 30],
     popupAnchor: [0, -25],
   });
+
+  // 3. 스탬프 명소 아이콘
+const stampIcon = L.icon({
+  iconUrl: "/img/stamp_pin.png",  // 스탬프 마커 이미지 경로
+  iconSize: [30, 30],
+  iconAnchor: [15, 30],
+  popupAnchor: [0, -25],
+});
 
   useEffect(() => {
     axios
@@ -66,13 +74,18 @@ const StopDetailPage = () => {
           <Marker
             key={place.id}
             position={[parseFloat(place.latitude), parseFloat(place.longitude)]}
-            icon={placeIcon}
+            icon={place.is_stampPlace === 1 ? stampIcon : placeIcon}
           >
-            <Popup>
-              <strong>{place.name}</strong>
-              <br />
-              {place.description}
-            </Popup>
+            <Tooltip direction="top" offset={[0, -20]} opacity={1} permanent={false}>
+              <div>
+                <strong>{place.name}</strong>
+                <br />
+                {place.description}
+                {place.is_stampPlace === 1 && (
+                  <div className="mt-1 text-green-600 font-semibold">🎖 스탬프 명소</div>
+                )}
+              </div>
+            </Tooltip>
           </Marker>
         ))}
       </MapContainer>
