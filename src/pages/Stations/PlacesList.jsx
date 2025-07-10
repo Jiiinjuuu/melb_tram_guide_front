@@ -6,7 +6,7 @@ import { fetchPlacesByStationId } from "../../services/api";
 const PlacesList = () => {
   const { id } = useParams();  // URL에서 station_id 가져오기
   const [places, setPlaces] = useState([]);
-  const navigate = useNavigate(); // ✅ 이동용
+  const navigate = useNavigate(); // 페이지 이동용
 
   useEffect(() => {
     fetchPlacesByStationId(id).then(data => {
@@ -31,7 +31,11 @@ const PlacesList = () => {
 
       <ul className="space-y-4">
         {places.map((place) => (
-          <li key={place.id} className="border-b pb-2">
+          <li
+            key={place.id}
+            onClick={() => navigate(`/place/${place.id}`)}
+            className="border-b pb-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
+          >
             <strong>{place.name}</strong> ({place.category} / {place.subcategory})<br />
             <small className="text-gray-600">{place.description}</small>
           </li>

@@ -44,7 +44,8 @@
 
 /* 웹 전용 스타일 */
 .mainpage.web {
-  background-image: url("./background.jpg");
+  /* background-image: url("./background.jpg"); */
+  background-color: rgb(255, 181, 199);
 }
 
 .mainpage.web .content button {
@@ -54,7 +55,8 @@
 
 /* 앱 전용 스타일 */
 .mainpage.app {
-  background-image: url("./background.jpg");
+  /* background-image: url("./background.jpg"); */
+  background-color: rgb(255, 181, 199);
 }
 
 .mainpage.app .content button {

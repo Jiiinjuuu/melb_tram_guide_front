@@ -10,14 +10,20 @@ const PlaceReviewForm = () => {
   const [rating, setRating] = useState(5);
   const [image, setImage] = useState(null);
 
-  const user_id = 1; // 임시 유저 ID (로그인 연동 필요 시 수정)
+  const user_id = 1; // 임시 유저 ID
 
+  // ✅ 명소 정보 불러오기
   useEffect(() => {
     axios.get(`http://localhost/melb_tram_api/public/getPlaceDetails.php?place_id=${id}`)
-      .then(res => setPlace(res.data))
+      .then(res => {
+        const placeData = res.data.place;
+        placeData.is_stamp = res.data.is_stampPlace; // res에서 따로 넣기
+        setPlace(placeData);
+      })
       .catch(err => console.error('명소 정보 로딩 실패:', err));
   }, [id]);
 
+  // ✅ 후기 등록
   const handleSubmit = () => {
     if (!content.trim()) return;
 
@@ -29,12 +35,23 @@ const PlaceReviewForm = () => {
     if (image) formData.append('image', image);
 
     axios.post('http://localhost/melb_tram_api/public/postReview.php', formData)
-      .then(() => navigate(`/place/${id}`))
+      .then(() => {
+        console.log('place:', place);
+        console.log('is_stamp:', place?.is_stamp);
+
+        if (place?.is_stamp == 1) {
+          navigate(`/stamp/${id}`);
+        } else {
+          navigate(`/place/${id}`);
+        }
+      })
       .catch(err => console.error('후기 등록 실패:', err));
   };
 
+  // ✅ 로딩 중 표시
   if (!place) return <div className="p-4">Loading...</div>;
 
+  // ✅ 실제 화면 렌더링
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">✍ {place.name} 후기 작성</h1>
@@ -47,7 +64,11 @@ const PlaceReviewForm = () => {
       />
       <div className="flex items-center gap-2 mb-4">
         <label className="text-sm font-medium">⭐ 평점:</label>
-        <select value={rating} onChange={(e) => setRating(Number(e.target.value))} className="border p-1 rounded">
+        <select
+          value={rating}
+          onChange={(e) => setRating(Number(e.target.value))}
+          className="border p-1 rounded"
+        >
           {[5, 4, 3, 2, 1].map(r => (
             <option key={r} value={r}>{r}</option>
           ))}

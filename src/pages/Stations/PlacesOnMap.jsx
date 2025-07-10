@@ -85,6 +85,9 @@ const stampIcon = L.icon({
             key={place.id}
             position={[parseFloat(place.latitude), parseFloat(place.longitude)]}
             icon={place.is_stampPlace === 1 ? stampIcon : placeIcon}
+            eventHandlers={{
+              click: () => navigate(`/place/${place.id}`) // ✅ 클릭 시 페이지 이동
+            }}
           >
             <Tooltip direction="top" offset={[0, -20]} opacity={1} permanent={false}>
               <div>

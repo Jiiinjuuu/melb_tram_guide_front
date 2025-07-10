@@ -12,6 +12,8 @@ import LoginPage from './pages/Login/loginPage';
 import PlaceDetail from './pages/PlaceReviews/PlaceDetail';
 import PlaceReviewForm from './pages/PostReview/PlaceReviewForm';
 import ReviewDetail from './pages/ReviewDetail/ReviewDetail';
+import StampPage from './pages/StampPage/stamp_page';
+import StampRanking from './pages/StampRanking/stamp_ranking';
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
         <Route path="/place/:id" element={<PlaceDetail />} />
         <Route path="/place/:id/post_review" element={<PlaceReviewForm />} />
         <Route path="/review/:id" element={<ReviewDetail />} />
+        <Route path="/stamp/:place_id" element={<StampPage />} />
+        <Route path="/ranking" element={<StampRanking />} />
       </Routes>
     </Router>
   );

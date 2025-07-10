@@ -17,6 +17,10 @@ const MainPage = () => {
     navigate("/stations"); // ✅ /stations로 이동
   };
 
+    const handleRanking = () => {
+    navigate("/ranking"); // ✅ 스탬프 랭킹으로 이동
+  };
+
   return (
     <div className={`mainpage ${isApp ? "app" : "web"}`}>
       <div className="overlay" />
@@ -24,6 +28,9 @@ const MainPage = () => {
         <h1>Welcome to Our Service</h1>
         <p>Explore Melbourne’s Tram-based Attractions</p>
         <button onClick={handleStart}>Get Started</button> {/* ✅ 클릭 이벤트 연결 */}
+                <button onClick={handleRanking} style={{ marginTop: "10px" }}>
+          🏆 스탬프 랭킹 보기
+        </button>
       </div>
     </div>
   );
