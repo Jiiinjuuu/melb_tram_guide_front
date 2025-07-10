@@ -1,34 +1,49 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // ✅ 추가
 
 const MyPage = () => {
-  const [userInfo, setUserInfo] = useState({ name: '', email: '' });
-  const [userStamps, setUserStamps] = useState([]); // 스탬프 배열로 변경
+  const [userInfo, setUserInfo] = useState(null);
+  const [userStamps, setUserStamps] = useState([]);
   const [myReviews, setMyReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // ✅ 추가
 
   useEffect(() => {
-    const name = localStorage.getItem('name') || '닉네임 없음';
-    const email = localStorage.getItem('email') || '이메일 없음';
-    setUserInfo({ name: name, email });
+    axios.get('http://localhost/melb_tram_api/public/session_check.php', {
+      withCredentials: true
+    })
+    .then(res => {
+      if (res.data.loggedIn) {
+        setUserInfo(res.data.user);
 
-    // 스탬프 정보 불러오기
-    axios.get('http://localhost/melb_tram_api/public/getUserStamps.php')
-      .then(res => {
-        if (Array.isArray(res.data)) {
-          setUserStamps(res.data); // 배열 전체 저장
-        }
-      });
+        axios.get('http://localhost/melb_tram_api/public/getUserStamps.php', {
+          withCredentials: true
+        }).then(res => {
+          if (Array.isArray(res.data)) {
+            setUserStamps(res.data);
+          }
+        });
 
-    // 내가 쓴 후기 불러오기
-    axios.get('http://localhost/melb_tram_api/public/getMyReviews.php')
-      .then(res => {
-        if (res.data.success) {
-          setMyReviews(res.data.reviews);
-        }
-      })
-      .finally(() => setLoading(false));
+        axios.get('http://localhost/melb_tram_api/public/getMyReviews.php', {
+          withCredentials: true
+        }).then(res => {
+          if (res.data.success) {
+            setMyReviews(res.data.reviews);
+          }
+        }).finally(() => setLoading(false));
+      } else {
+        alert("로그인이 필요한 페이지입니다.");
+        window.location.href = "/login";
+      }
+    })
+    .catch(() => {
+      alert("세션 확인 중 오류가 발생했습니다.");
+      window.location.href = "/login";
+    });
   }, []);
+
+  if (!userInfo) return null;
 
   return (
     <div className="p-4">
@@ -58,12 +73,23 @@ const MyPage = () => {
       {loading ? (
         <p>불러오는 중...</p>
       ) : (
-        <ul className="space-y-2">
+        <ul className="space-y-4">
           {myReviews.length === 0 ? (
             <p>작성한 후기가 없습니다.</p>
           ) : (
             myReviews.map((review, index) => (
-              <li key={index} className="bg-white p-3 shadow rounded-lg">
+              <li
+                key={index}
+                className="bg-white p-4 shadow rounded-lg cursor-pointer hover:bg-gray-50 transition"
+                onClick={() => navigate(`/review/${review.id}`)} // ✅ 클릭 시 이동
+              >
+                {review.image_full_url && (
+                  <img
+                    src={review.image_full_url}
+                    alt="후기 이미지"
+                    className="w-full h-48 object-cover rounded mb-3"
+                  />
+                )}
                 <p><strong>장소:</strong> {review.place_name}</p>
                 <p><strong>내용:</strong> {review.content}</p>
                 <p className="text-sm text-gray-500">{review.created_at}</p>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // 페이지 이동용
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -8,26 +8,28 @@ const LoginPage = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const [user, setUser] = useState(null);
 
-  const navigate = useNavigate(); // 페이지 이동 훅
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost/melb_tram_api/public/login.php", {
-        email,
-        password,
-      }, {
-        headers: {
-          "Content-Type": "application/json"
+      const response = await axios.post(
+        "http://localhost/melb_tram_api/public/login.php",
+        { email, password },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true // ✅ 세션 쿠키 보내기
         }
-      });
+      );
 
       if (response.data.success) {
         setUser(response.data.user);
         setErrorMsg("");
         alert(`환영합니다, ${response.data.user.name}님!`);
-        navigate("/"); // 필요시 이동 가능
+        navigate("/"); // 메인 페이지로 이동
       }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
@@ -39,7 +41,7 @@ const LoginPage = () => {
   };
 
   const handleRegister = () => {
-    navigate("/signup"); // 경로는 라우팅 설정에 맞게 수정하세요
+    navigate("/signup");
   };
 
   return (

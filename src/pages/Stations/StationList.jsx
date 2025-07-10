@@ -103,6 +103,9 @@ const StationList = () => {
                 opacity: 1,
               }
             );
+                    marker.on('click', () => {
+          navigate(`/place/${place.id}`);
+        });
           }
         });
       })

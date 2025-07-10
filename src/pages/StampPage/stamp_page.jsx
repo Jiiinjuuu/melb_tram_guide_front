@@ -6,21 +6,33 @@ const StampPage = () => {
   const { place_id } = useParams();
   const navigate = useNavigate();
   const [message, setMessage] = useState('스탬프 확인 중...');
-  const user_id = 1; // 임시 하드코딩
 
   useEffect(() => {
     const checkAndAddStamp = async () => {
       try {
-        const res = await axios.post('http://localhost/melb_tram_api/public/stamp_check.php', {
-          user_id,
-          place_id,
+        // ✅ 먼저 세션 확인
+        const session = await axios.get('http://localhost/melb_tram_api/public/session_check.php', {
+          withCredentials: true
         });
+
+        if (!session.data.loggedIn) {
+          alert('로그인이 필요합니다.');
+          navigate('/login');
+          return;
+        }
+
+        // ✅ 스탬프 확인/등록 요청 (user_id는 보내지 않음!)
+        const res = await axios.post(
+          'http://localhost/melb_tram_api/public/stamp_check.php',
+          { place_id },
+          { withCredentials: true }
+        );
 
         if (res.data.status === 'new') {
           setMessage('🎉 스탬프를 획득하셨습니다!');
           setTimeout(() => {
             navigate(`/place/${place_id}`);
-          }, 5000); // 5초 후 이동
+          }, 5000);
         } else if (res.data.status === 'exists') {
           setMessage('✅ 이미 스탬프를 획득하셨습니다!');
           setTimeout(() => {
@@ -35,10 +47,10 @@ const StampPage = () => {
       }
     };
 
-    if (user_id && place_id) {
+    if (place_id) {
       checkAndAddStamp();
     }
-  }, [user_id, place_id, navigate]);
+  }, [place_id, navigate]);
 
   return (
     <div className="p-6 text-center">

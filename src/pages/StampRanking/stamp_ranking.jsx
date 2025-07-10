@@ -4,6 +4,7 @@ import axios from 'axios';
 const StampRanking = () => {
   const [ranking, setRanking] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     axios.get('http://localhost/melb_tram_api/public/get_stamp_ranking.php')
@@ -11,18 +12,23 @@ const StampRanking = () => {
         if (res.data.success) {
           setRanking(res.data.ranking);
         } else {
-          console.error('데이터 불러오기 실패:', res.data.message);
+          setError('데이터를 불러오지 못했습니다.');
         }
       })
-      .catch((err) => console.error('에러:', err))
+      .catch(() => setError('서버와의 통신에 실패했습니다.'))
       .finally(() => setLoading(false));
   }, []);
 
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-4">🏆 스탬프 순위</h2>
+
       {loading ? (
         <p>불러오는 중...</p>
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
+      ) : ranking.length === 0 ? (
+        <p>아직 스탬프를 받은 유저가 없습니다.</p>
       ) : (
         <ul className="space-y-2 list-disc pl-6">
           {ranking.map((user, index) => (

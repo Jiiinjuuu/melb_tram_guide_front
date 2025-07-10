@@ -7,8 +7,19 @@ const ReviewDetail = () => {
   const [review, setReview] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
+  const [currentUserId, setCurrentUserId] = useState(null); // ✅ 로그인 사용자 ID
 
-  const user_id = 1; // 임시 사용자 ID
+  // ✅ 로그인 사용자 확인
+  useEffect(() => {
+    axios.get('http://localhost/melb_tram_api/public/session_check.php', {
+      withCredentials: true
+    })
+    .then(res => {
+      if (res.data.loggedIn) {
+        setCurrentUserId(res.data.user.id);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     axios.get(`http://localhost/melb_tram_api/public/getReviewById.php?review_id=${id}`)
@@ -25,12 +36,16 @@ const ReviewDetail = () => {
 
     axios.post('http://localhost/melb_tram_api/public/postComment.php', {
       review_id: id,
-      user_id,
       content: newComment
-    }).then(res => {
+    }, {
+      withCredentials: true
+    })
+    .then(res => {
       if (res.data.success) {
         setComments(prev => [...prev, res.data.comment]);
         setNewComment('');
+      } else {
+        alert(res.data.message || '댓글 등록 실패');
       }
     });
   };
@@ -38,8 +53,15 @@ const ReviewDetail = () => {
   const handleDeleteComment = (commentId) => {
     axios.post('http://localhost/melb_tram_api/public/deleteComment.php', {
       comment_id: commentId
-    }).then(() => {
-      setComments(prev => prev.filter(c => c.id !== commentId));
+    }, {
+      withCredentials: true
+    })
+    .then(res => {
+      if (res.data.success) {
+        setComments(prev => prev.filter(c => c.id !== commentId));
+      } else {
+        alert(res.data.message || '삭제 실패');
+      }
     });
   };
 
@@ -56,13 +78,14 @@ const ReviewDetail = () => {
         </div>
         <div className="text-yellow-500 mb-2">⭐ {review.rating}</div>
         <div className="text-gray-900 whitespace-pre-line mb-2">{review.content}</div>
-        {review.image_url && (
+        {review.image_full_url && (
           <img
-            src={`http://localhost/melb_tram_api${review.image_url}`}
+            src={review.image_full_url}
             alt="후기 이미지"
             className="mt-2 max-h-96 w-full object-cover rounded"
           />
         )}
+
       </div>
 
       <h2 className="text-lg font-semibold mb-2">💬 댓글</h2>
@@ -72,7 +95,7 @@ const ReviewDetail = () => {
             <span>
               💬 <strong>{comment.username || '익명'}:</strong> {comment.content}
             </span>
-            {comment.user_id === user_id && (
+            {comment.user_id === currentUserId && (
               <button
                 onClick={() => handleDeleteComment(comment.id)}
                 className="text-xs text-red-500 hover:underline"

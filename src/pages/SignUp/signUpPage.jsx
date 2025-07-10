@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom"; // 🔑 리디렉션용
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,7 @@ const Signup = () => {
     password: ""
   });
   const [message, setMessage] = useState(null);
+  const navigate = useNavigate(); // 🔑 페이지 이동
 
   const handleChange = (e) => {
     setFormData({
@@ -20,11 +22,20 @@ const Signup = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost/melb_tram_api/public/signup.php", formData);
+      const res = await axios.post(
+        "http://localhost/melb_tram_api/public/signup.php",
+        formData,
+        { withCredentials: true } // ✅ 세션 쿠키 주고받기
+      );
 
       if (res.data.success) {
-        setMessage("🎉 회원가입이 완료되었습니다!");
+        setMessage("🎉 회원가입 및 자동 로그인 완료!");
         setFormData({ name: "", email: "", password: "" });
+
+        // 🔑 약간의 지연 후 홈이나 마이페이지로 이동
+        setTimeout(() => {
+          navigate("/my-page"); // 원하면 다른 경로로 바꿔도 됨
+        }, 1000);
       }
     } catch (err) {
       if (err.response?.status === 409) {
