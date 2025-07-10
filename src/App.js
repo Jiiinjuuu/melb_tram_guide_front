@@ -14,6 +14,7 @@ import PlaceReviewForm from './pages/PostReview/PlaceReviewForm';
 import ReviewDetail from './pages/ReviewDetail/ReviewDetail';
 import StampPage from './pages/StampPage/stamp_page';
 import StampRanking from './pages/StampRanking/stamp_ranking';
+import LatestReviewsPage from './pages/LatestReviewsPage/LatestReviewsPage'; // ✅ 새 페이지 import
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/review/:id" element={<ReviewDetail />} />
         <Route path="/stamp/:place_id" element={<StampPage />} />
         <Route path="/ranking" element={<StampRanking />} />
+        <Route path="/latest-reviews" element={<LatestReviewsPage />} />
       </Routes>
     </Router>
   );

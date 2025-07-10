@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import BASE_URL from '../../config';
 
 const PlaceReviewForm = () => {
   const { id } = useParams();
@@ -13,7 +14,7 @@ const PlaceReviewForm = () => {
 
   // ✅ 세션 로그인 확인
   useEffect(() => {
-    axios.get('http://localhost/melb_tram_api/public/session_check.php', {
+    axios.get(`${BASE_URL}/session_check.php`, {
       withCredentials: true
     })
     .then(res => {
@@ -30,7 +31,7 @@ const PlaceReviewForm = () => {
 
   // ✅ 명소 정보 불러오기
   useEffect(() => {
-    axios.get(`http://localhost/melb_tram_api/public/getPlaceDetails.php?place_id=${id}`)
+    axios.get(`${BASE_URL}/getPlaceDetails.php?place_id=${id}`)
       .then(res => {
         const placeData = res.data.place;
         placeData.is_stamp = res.data.is_stampPlace;
@@ -52,7 +53,7 @@ const PlaceReviewForm = () => {
     formData.append('rating', rating);
     if (image) formData.append('image', image);
 
-    axios.post('http://localhost/melb_tram_api/public/postReview.php', formData, {
+    axios.post(`${BASE_URL}/postReview.php`, formData, {
       withCredentials: true,
       headers: {
         "Content-Type": "multipart/form-data"

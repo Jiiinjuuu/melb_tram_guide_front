@@ -4,6 +4,7 @@ import axios from 'axios';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useNavigate } from 'react-router-dom';
+import BASE_URL from '../../config';
 
 const StationList = () => {
   const mapRef = useRef(null);
@@ -38,7 +39,7 @@ const StationList = () => {
     }).addTo(leafletMapRef.current);
 
     // 정류장 마커 + 노선 경로
-    axios.get('http://localhost/melb_tram_api/public/getStations_map.php')
+    axios.get(`${BASE_URL}/getStations_map.php`)
       .then(response => {
         const stationsByLine = {};
 
@@ -87,7 +88,7 @@ const StationList = () => {
       });
 
     // 스탬프 명소 마커 표시
-    axios.get('http://localhost/melb_tram_api/public/getStampPlaces.php')
+    axios.get(`${BASE_URL}/getStampPlaces.php`)
       .then(response => {
         response.data.forEach(place => {
           if (place.latitude && place.longitude) {

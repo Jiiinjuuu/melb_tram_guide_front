@@ -1,6 +1,6 @@
 import axios from "axios";
+import BASE_URL from '../config';
 
-const BASE_URL = "http://localhost/melb_tram_api/public"; // php 파일 있는 경로
 
 export const fetchStations = async () => {
   try {

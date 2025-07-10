@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import BASE_URL from '../../config';
 
 const StampPage = () => {
   const { place_id } = useParams();
@@ -11,7 +12,7 @@ const StampPage = () => {
     const checkAndAddStamp = async () => {
       try {
         // ✅ 먼저 세션 확인
-        const session = await axios.get('http://localhost/melb_tram_api/public/session_check.php', {
+        const session = await axios.get(`${BASE_URL}/session_check.php` , {
           withCredentials: true
         });
 
@@ -23,7 +24,7 @@ const StampPage = () => {
 
         // ✅ 스탬프 확인/등록 요청 (user_id는 보내지 않음!)
         const res = await axios.post(
-          'http://localhost/melb_tram_api/public/stamp_check.php',
+          `${BASE_URL}/stamp_check.php` ,
           { place_id },
           { withCredentials: true }
         );

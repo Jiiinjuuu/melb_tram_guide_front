@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import BASE_URL from '../../config';
 
 const StampRanking = () => {
   const [ranking, setRanking] = useState([]);
@@ -7,7 +8,8 @@ const StampRanking = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost/melb_tram_api/public/get_stamp_ranking.php')
+    axios.get(
+        `${BASE_URL}/get_stamp_ranking.php`)
       .then((res) => {
         if (res.data.success) {
           setRanking(res.data.ranking);

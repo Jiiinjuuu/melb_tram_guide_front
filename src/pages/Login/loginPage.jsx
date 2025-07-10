@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import BASE_URL from '../../config'; // config.js에서 불러온 환경변수
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -12,27 +13,32 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     try {
       const response = await axios.post(
-        "http://localhost/melb_tram_api/public/login.php",
+        `${BASE_URL}/login.php`,
         { email, password },
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true // ✅ 세션 쿠키 보내기
+          withCredentials: true
         }
       );
 
-      if (response.data.success) {
+      console.log("📦 응답 데이터:", response.data);
+
+      if (response.data && response.data.success === true) {
         setUser(response.data.user);
         setErrorMsg("");
         alert(`환영합니다, ${response.data.user.name}님!`);
-        navigate("/"); // 메인 페이지로 이동
+        navigate("/");
+      } else {
+        setErrorMsg(response.data.error || "로그인에 실패했습니다.");
       }
+
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.error) {
+      console.error('❗로그인 요청 실패:', err);
+      if (err.response?.data?.error) {
         setErrorMsg(err.response.data.error);
       } else {
         setErrorMsg("로그인 중 알 수 없는 오류가 발생했습니다.");
