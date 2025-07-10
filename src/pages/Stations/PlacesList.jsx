@@ -1,8 +1,9 @@
+// 리스트 형식으로 명소들을 띄워주는 역할
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchPlacesByStationId } from "../../services/api";
 
-const StationDetail = () => {
+const PlacesList = () => {
   const { id } = useParams();  // URL에서 station_id 가져오기
   const [places, setPlaces] = useState([]);
   const navigate = useNavigate(); // ✅ 이동용
@@ -40,4 +41,4 @@ const StationDetail = () => {
   );
 };
 
-export default StationDetail;
+export default PlacesList;

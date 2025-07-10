@@ -1,14 +1,16 @@
+// 해당 정류장의 명소들을 지도에 띄우는 역할
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { MapContainer, TileLayer, Marker, Popup, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import 'leaflet/dist/leaflet.css';
 
-const StopDetailPage = () => {
+const PlacesOnMap = () => {
   const { id } = useParams();
   const [station, setStation] = useState(null);
   const [places, setPlaces] = useState([]);
+  const navigate = useNavigate();
 
   // 1. 정류장 아이콘
   const tramIcon = L.icon({
@@ -54,6 +56,14 @@ const stampIcon = L.icon({
   return (
     <div className="p-4">
       <h1 className="text-3xl font-bold mb-4">{station.name}</h1>
+
+      <button
+        onClick={() => navigate(`/stations/${id}`)}
+        className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+      >
+        🔙 정류장 리스트 보기
+      </button>
+
       <MapContainer
         center={[parseFloat(station.latitude), parseFloat(station.longitude)]}
         zoom={15}
@@ -93,4 +103,4 @@ const stampIcon = L.icon({
   );
 };
 
-export default StopDetailPage;
+export default PlacesOnMap;

@@ -1,3 +1,4 @@
+// 트램별 정류장을 지도에 띄우는 역할
 import React, { useEffect, useRef } from 'react';
 import axios from 'axios';
 import L from 'leaflet';
@@ -9,54 +10,83 @@ const StationList = () => {
   const leafletMapRef = useRef(null);
   const navigate = useNavigate();
 
-  // 1. 정류장 마커 아이콘
-  const tramIcon = L.icon({
-    iconUrl: '/img/tram-pin.png',
-    iconSize: [40, 40],
-    iconAnchor: [20, 40],
-    popupAnchor: [0, -35]
-  });
+  // 노선번호별 아이콘 URL 지정 함수
+  const getTramIconByLine = (line) => {
+    return L.icon({
+      iconUrl: `/img/${line}.png`, // 예: /img/35.png
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -35],
+    });
+  };
 
-  // 2. 스탬프 명소 아이콘 추가
+  // 스탬프 명소 아이콘
   const stampIcon = L.icon({
     iconUrl: '/img/stamp_pin.png',
     iconSize: [30, 30],
     iconAnchor: [15, 30],
-    popupAnchor: [0, -25]
+    popupAnchor: [0, -25],
   });
 
   useEffect(() => {
     // 지도 초기화
     leafletMapRef.current = L.map(mapRef.current).setView([-37.8136, 144.9631], 14);
 
-    // 타일 레이어 추가
+    // 타일 레이어
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors',
     }).addTo(leafletMapRef.current);
 
-    // 1. 정류장 마커 불러오기
+    // 정류장 마커 + 노선 경로
     axios.get('http://localhost/melb_tram_api/public/getStations_map.php')
       .then(response => {
+        const stationsByLine = {};
+
         response.data.forEach(station => {
           if (station.latitude && station.longitude) {
+            const line = station.line || 'default';
+
+            // 노선별 정류장 위치 수집
+            if (!stationsByLine[line]) stationsByLine[line] = [];
+            stationsByLine[line].push({
+              lat: parseFloat(station.latitude),
+              lng: parseFloat(station.longitude)
+            });
+
+            // 정류장 마커 표시
+            const icon = getTramIconByLine(line);
             const marker = L.marker([station.latitude, station.longitude], {
-              icon: tramIcon
+              icon: icon
             }).addTo(leafletMapRef.current);
 
             marker.bindTooltip(`<strong>${station.name}</strong><br>${station.description}`);
-
-            // 클릭 시 정류장 상세 페이지 이동
             marker.on('click', () => {
-              navigate(`/stations/${station.id}`);
+              navigate(`/places_on_map/${station.id}`);
             });
           }
+        });
+
+        // 노선별 폴리라인 경로 표시
+        Object.entries(stationsByLine).forEach(([line, coords]) => {
+          const colorMap = {
+            '35': 'red',
+            '96': 'blue',
+            '86': 'gold',
+            'default': 'gray'
+          };
+          const color = colorMap[line] || 'black';
+
+          L.polyline(coords, {
+            color,
+            weight: 4
+          }).addTo(leafletMapRef.current);
         });
       })
       .catch(error => {
         console.error('정류장 데이터 로딩 실패:', error);
       });
 
-    // ✅ 2. 스탬프 명소 마커 불러오기
+    // 스탬프 명소 마커 표시
     axios.get('http://localhost/melb_tram_api/public/getStampPlaces.php')
       .then(response => {
         response.data.forEach(place => {
@@ -65,14 +95,14 @@ const StationList = () => {
               icon: stampIcon
             }).addTo(leafletMapRef.current);
 
-            marker.bindTooltip(`<strong>${place.name}</strong><br>${place.description}<br>🎖 스탬프 명소`, {
-              direction: 'top',
-              offset: [0, -20],
-              opacity: 1
-            });
-
-            // 클릭 시 아무 동작 없지만 추후 상세페이지 연결 가능
-            // marker.on('click', () => { ... });
+            marker.bindTooltip(
+              `<strong>${place.name}</strong><br>${place.description}<br>🎖 스탬프 명소`,
+              {
+                direction: 'top',
+                offset: [0, -20],
+                opacity: 1,
+              }
+            );
           }
         });
       })
@@ -80,7 +110,6 @@ const StationList = () => {
         console.error('스탬프 명소 데이터 로딩 실패:', error);
       });
 
-    // cleanup
     return () => {
       leafletMapRef.current.remove();
     };
