@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import BASE_URL from '../../config'; // config.js에서 불러온 환경변수
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
