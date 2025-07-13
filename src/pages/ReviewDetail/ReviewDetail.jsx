@@ -158,3 +158,5 @@
     </div>
   );
   };
+
+  export default ReviewDetail;
