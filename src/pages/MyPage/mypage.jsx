@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // ✅ 추가
-import BASE_URL from '../../config'; // config.js에서 불러온 환경변수
 
 const MyPage = () => {
   const [userInfo, setUserInfo] = useState(null);
@@ -11,14 +10,14 @@ const MyPage = () => {
   const navigate = useNavigate(); // ✅ 추가
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/session_check.php`, {
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php`, {
       withCredentials: true
     })
     .then(res => {
       if (res.data.loggedIn) {
         setUserInfo(res.data.user);
 
-        axios.get(`${BASE_URL}/getUserStamps.php`, {
+        axios.get(`${process.env.REACT_APP_API_BASE_URL}/getUserStamps.php`, {
           withCredentials: true
         }).then(res => {
           if (Array.isArray(res.data)) {
@@ -26,7 +25,7 @@ const MyPage = () => {
           }
         });
 
-        axios.get(`${BASE_URL}/getMyReviews.php`, {
+        axios.get(`${process.env.REACT_APP_API_BASE_URL}/getMyReviews.php`, {
           withCredentials: true
         }).then(res => {
           if (res.data.success) {

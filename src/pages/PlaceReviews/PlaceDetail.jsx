@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import BASE_URL from '../../config';
 
 const PlaceDetail = () => {
   const { id } = useParams();
@@ -10,17 +9,17 @@ const PlaceDetail = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/getPlaceDetails.php?place_id=${id}`)
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/getPlaceDetails.php?place_id=${id}`)
       .then(res => setPlace(res.data))
       .catch(err => console.error('명소 정보 오류:', err));
 
-    axios.get( `${BASE_URL}/getReviews.php?place_id=${id}`)
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/getReviews.php?place_id=${id}`)
       .then(res => setReviews(res.data))
       .catch(err => console.error('후기 불러오기 오류:', err));
-  }, [id]);
+  }, [id]); 
 
   const handleReviewWrite = () => {
-    axios.get(`${BASE_URL}/session_check.php`, {
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php`, {
       withCredentials: true
     })
     .then(res => {

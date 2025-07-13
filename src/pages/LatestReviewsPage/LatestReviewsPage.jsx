@@ -15,7 +15,7 @@ const LatestReviewsPage = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`${BASE_URL}/getLatestReviews.php?page=${page}`)
+      .get(`${process.env.REACT_APP_API_BASE_URL}/getLatestReviews.php?page=${page}`)
       .then((res) => {
         setReviews(res.data);
       })

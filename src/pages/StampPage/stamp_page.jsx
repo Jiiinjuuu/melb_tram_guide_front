@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import BASE_URL from '../../config';
 
 const StampPage = () => {
   const { place_id } = useParams();
@@ -12,7 +11,7 @@ const StampPage = () => {
     const checkAndAddStamp = async () => {
       try {
         // ✅ 먼저 세션 확인
-        const session = await axios.get(`${BASE_URL}/session_check.php` , {
+        const session = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php` , {
           withCredentials: true
         });
 

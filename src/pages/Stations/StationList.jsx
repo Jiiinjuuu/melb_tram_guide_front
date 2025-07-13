@@ -4,7 +4,6 @@ import axios from 'axios';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useNavigate } from 'react-router-dom';
-import BASE_URL from '../../config';
 
 const StationList = () => {
   const mapRef = useRef(null);
@@ -39,7 +38,7 @@ const StationList = () => {
     }).addTo(leafletMapRef.current);
 
     // 정류장 마커 + 노선 경로
-    axios.get(`${BASE_URL}/getStations_map.php`)
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/getStations_map.php`)
       .then(response => {
         const stationsByLine = {};
 
@@ -88,7 +87,7 @@ const StationList = () => {
       });
 
     // 스탬프 명소 마커 표시
-    axios.get(`${BASE_URL}/getStampPlaces.php`)
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/getStampPlaces.php`)
       .then(response => {
         response.data.forEach(place => {
           if (place.latitude && place.longitude) {

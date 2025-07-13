@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import BASE_URL from '../../config';
 
 const ReviewDetail = () => {
   const { id } = useParams(); // review_id
@@ -12,7 +11,7 @@ const ReviewDetail = () => {
 
   // ✅ 로그인 사용자 확인
   useEffect(() => {
-    axios.get(`${BASE_URL}/session_check.php`,  {
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php`,  {
       withCredentials: true
     })
     .then(res => {
@@ -23,11 +22,11 @@ const ReviewDetail = () => {
   }, []);
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/getReviewById.php?review_id=${id}`)
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/getReviewById.php?review_id=${id}`)
       .then(res => setReview(res.data))
       .catch(err => console.error('후기 정보 오류:', err));
 
-    axios.get(`${BASE_URL}/getComments.php?review_id=${id}`)
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/getComments.php?review_id=${id}`)
       .then(res => setComments(res.data))
       .catch(err => console.error('댓글 정보 오류:', err));
   }, [id]);
@@ -35,7 +34,7 @@ const ReviewDetail = () => {
   const handleSubmitComment = () => {
     if (!newComment.trim()) return;
 
-    axios.post(`${BASE_URL}/postComment.php`, {
+    axios.post(`${process.env.REACT_APP_API_BASE_URL}/postComment.php`, {
       review_id: id,
       content: newComment
     }, {
@@ -52,7 +51,7 @@ const ReviewDetail = () => {
   };
 
   const handleDeleteComment = (commentId) => {
-    axios.post(`${BASE_URL}/deleteComment.php`, {
+    axios.post(`${process.env.REACT_APP_API_BASE_URL}/deleteComment.php`, {
       comment_id: commentId
     }, {
       withCredentials: true

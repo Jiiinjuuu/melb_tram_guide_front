@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import BASE_URL from '../../config';
 
 const PlaceReviewForm = () => {
   const { id } = useParams();
@@ -14,7 +13,7 @@ const PlaceReviewForm = () => {
 
   // ✅ 세션 로그인 확인
   useEffect(() => {
-    axios.get(`${BASE_URL}/session_check.php`, {
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php`, {
       withCredentials: true
     })
     .then(res => {

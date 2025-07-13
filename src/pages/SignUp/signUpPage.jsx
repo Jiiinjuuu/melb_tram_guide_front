@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; // 🔑 리디렉션용
-import BASE_URL from '../../config';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -24,7 +23,7 @@ const Signup = () => {
 
     try {
       const res = await axios.post(
-        `${BASE_URL}/signup.php` ,
+        `${process.env.REACT_APP_API_BASE_URL}/signup.php` ,
         formData,
         { withCredentials: true } // ✅ 세션 쿠키 주고받기
       );

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios"; // ✅ axios 불러오기
 import "./mainpage.css";
-import BASE_URL from '../../config'; // config.js에서 불러온 환경변수
 
 const MainPage = () => {
   const [isApp, setIsApp] = useState(false);
@@ -16,7 +15,7 @@ const MainPage = () => {
     }
 
     // ✅ 로그인 상태 확인
-axios.get(`${BASE_URL}/session_check.php`, {
+axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php`, {
   withCredentials: true
 })
 .then((res) => {

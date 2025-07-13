@@ -5,7 +5,6 @@ import axios from "axios";
 import { MapContainer, TileLayer, Marker, Popup, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import 'leaflet/dist/leaflet.css';
-import BASE_URL from '../../config';
 
 const PlacesOnMap = () => {
   const { id } = useParams();
@@ -39,7 +38,7 @@ const stampIcon = L.icon({
 
   useEffect(() => {
     axios
-      .get(`${BASE_URL}/getStations.php`)
+      .get(`${process.env.REACT_APP_API_BASE_URL}/getStations.php`)
       .then((res) => {
         const target = res.data.find((s) => s.id === parseInt(id));
         setStation(target);
@@ -47,7 +46,7 @@ const stampIcon = L.icon({
       .catch((err) => console.error("정류장 정보 불러오기 실패:", err));
 
     axios
-      .get(`${BASE_URL}/getplaces_map.php?station_id=${id}`)
+      .get(`${process.env.REACT_APP_API_BASE_URL}/getplaces_map.php?station_id=${id}`)
       .then((res) => setPlaces(res.data))
       .catch((err) => console.error("명소 정보 불러오기 실패:", err));
   }, [id]);
