@@ -23,7 +23,7 @@ const StampPage = () => {
 
         // ✅ 스탬프 확인/등록 요청 (user_id는 보내지 않음!)
         const res = await axios.post(
-          `${BASE_URL}/stamp_check.php` ,
+          `${process.env.REACT_APP_API_BASE_URL}/stamp_check.php` ,
           { place_id },
           { withCredentials: true }
         );

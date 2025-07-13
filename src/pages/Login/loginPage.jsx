@@ -14,7 +14,7 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${BASE_URL}/login.php`,
+        `${process.env.REACT_APP_API_BASE_URL}/login.php`,
         { email, password },
         {
           headers: {

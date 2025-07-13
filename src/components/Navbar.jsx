@@ -10,7 +10,7 @@ function Navbar() {
 
   useEffect(() => {
     // ✅ URL 변경 시마다 세션 확인
-    axios.get(`${BASE_URL}/session_check.php`, {
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php`, {
       withCredentials: true
     })
     .then(res => {
@@ -27,7 +27,7 @@ function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await axios.get(`${BASE_URL}/logout.php`, {
+      await axios.get(`${process.env.REACT_APP_API_BASE_URL}/logout.php`, {
         withCredentials: true
       });
       setUser(null);

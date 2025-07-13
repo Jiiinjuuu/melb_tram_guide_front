@@ -30,7 +30,7 @@ const PlaceReviewForm = () => {
 
   // ✅ 명소 정보 불러오기
   useEffect(() => {
-    axios.get(`${BASE_URL}/getPlaceDetails.php?place_id=${id}`)
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/getPlaceDetails.php?place_id=${id}`)
       .then(res => {
         const placeData = res.data.place;
         placeData.is_stamp = res.data.is_stampPlace;
@@ -52,7 +52,7 @@ const PlaceReviewForm = () => {
     formData.append('rating', rating);
     if (image) formData.append('image', image);
 
-    axios.post(`${BASE_URL}/postReview.php`, formData, {
+    axios.post(`${process.env.REACT_APP_API_BASE_URL}/postReview.php`, formData, {
       withCredentials: true,
       headers: {
         "Content-Type": "multipart/form-data"
