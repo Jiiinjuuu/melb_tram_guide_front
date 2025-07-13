@@ -1,71 +1,95 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
+  import React, { useEffect, useState } from 'react';
+  import { useParams } from 'react-router-dom';
+  import axios from 'axios';
 
-const ReviewDetail = () => {
-  const { id } = useParams(); // review_id
-  const [review, setReview] = useState(null);
-  const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState('');
-  const [currentUserId, setCurrentUserId] = useState(null); // ✅ 로그인 사용자 ID
+  const ReviewDetail = () => {
+    const { id } = useParams(); // review_id
+    const [review, setReview] = useState(null);
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState('');
+    const [currentUserId, setCurrentUserId] = useState(null); // ✅ 로그인 사용자 ID
 
-  // ✅ 로그인 사용자 확인
-  useEffect(() => {
-    axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php`,  {
-      withCredentials: true
-    })
-    .then(res => {
-      if (res.data.loggedIn) {
-        setCurrentUserId(res.data.user.id);
-      }
-    });
-  }, []);
+    // ✅ 로그인 사용자 확인
+    useEffect(() => {
+      axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php`,  {
+        withCredentials: true
+      })
+      .then(res => {
+        if (res.data.loggedIn) {
+          setCurrentUserId(res.data.user.id);
+        }
+      });
+    }, []);
 
-  useEffect(() => {
-    axios.get(`${process.env.REACT_APP_API_BASE_URL}/getReviewById.php?review_id=${id}`)
-      .then(res => setReview(res.data))
-      .catch(err => console.error('후기 정보 오류:', err));
+    useEffect(() => {
+      axios.get(`${process.env.REACT_APP_API_BASE_URL}/getReviewById.php?review_id=${id}`)
+        .then(res => setReview(res.data))
+        .catch(err => console.error('후기 정보 오류:', err));
 
-    axios.get(`${process.env.REACT_APP_API_BASE_URL}/getComments.php?review_id=${id}`)
-      .then(res => setComments(res.data))
-      .catch(err => console.error('댓글 정보 오류:', err));
-  }, [id]);
+      axios.get(`${process.env.REACT_APP_API_BASE_URL}/getComments.php?review_id=${id}`)
+        .then(res => setComments(res.data))
+        .catch(err => console.error('댓글 정보 오류:', err));
+    }, [id]);
 
-  const handleSubmitComment = () => {
-    if (!newComment.trim()) return;
+    const handleSubmitComment = () => {
+      if (!newComment.trim()) return;
 
-    axios.post(`${process.env.REACT_APP_API_BASE_URL}/postComment.php`, {
-      review_id: id,
-      content: newComment
-    }, {
-      withCredentials: true
-    })
-    .then(res => {
-      if (res.data.success) {
-        setComments(prev => [...prev, res.data.comment]);
-        setNewComment('');
+      axios.post(`${process.env.REACT_APP_API_BASE_URL}/postComment.php`, {
+        review_id: id,
+        content: newComment
+      }, {
+        withCredentials: true
+      })
+      .then(res => {
+        if (res.data.success) {
+          setComments(prev => [...prev, res.data.comment]);
+          setNewComment('');
+        } else {
+          alert(res.data.message || '댓글 등록 실패');
+        }
+      });
+    };
+
+    const handleDeleteComment = (commentId) => {
+      axios.post(`${process.env.REACT_APP_API_BASE_URL}/deleteComment.php`, {
+        comment_id: commentId
+      }, {
+        withCredentials: true
+      })
+      .then(res => {
+        if (res.data.success) {
+          setComments(prev => prev.filter(c => c.id !== commentId));
+        } else {
+          alert(res.data.message || '삭제 실패');
+        }
+      });
+    };
+
+    const handleDeleteReview = async () => {
+    const confirmed = window.confirm('정말 후기를 삭제하시겠습니까?');
+    if (!confirmed) return;
+
+    try {
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/deleteReview.php`,
+        { review_id: id },
+        { withCredentials: true }
+      );
+
+      if (res.data.status === 'success') {
+        alert('후기가 삭제되었습니다.');
+        window.history.back(); // 혹은 navigate(-1);
       } else {
-        alert(res.data.message || '댓글 등록 실패');
+        alert(res.data.error || '삭제 실패');
       }
-    });
+    } catch (err) {
+      console.error('리뷰 삭제 실패:', err);
+      alert('서버 오류로 삭제에 실패했습니다.');
+    }
   };
 
-  const handleDeleteComment = (commentId) => {
-    axios.post(`${process.env.REACT_APP_API_BASE_URL}/deleteComment.php`, {
-      comment_id: commentId
-    }, {
-      withCredentials: true
-    })
-    .then(res => {
-      if (res.data.success) {
-        setComments(prev => prev.filter(c => c.id !== commentId));
-      } else {
-        alert(res.data.message || '삭제 실패');
-      }
-    });
-  };
 
-  if (!review) return <div className="p-4">Loading...</div>;
+    if (!review) return <div className="p-4">Loading...</div>;
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
@@ -73,7 +97,17 @@ const ReviewDetail = () => {
 
       <div className="bg-white border rounded p-4 shadow-sm mb-6">
         <div className="flex justify-between items-center mb-2">
-          <div className="font-semibold text-gray-800">{review.username || '익명'}</div>
+          <div className="font-semibold text-gray-800">
+            {review.username || '익명'}
+            {review.user_id === currentUserId && (
+              <button
+                onClick={handleDeleteReview}
+                className="ml-2 text-sm text-red-600 hover:underline"
+              >
+                (후기 삭제)
+              </button>
+            )}
+          </div>
           <div className="text-sm text-gray-500">{review.created_at}</div>
         </div>
         <div className="text-yellow-500 mb-2">⭐ {review.rating}</div>
@@ -85,7 +119,6 @@ const ReviewDetail = () => {
             className="mt-2 max-h-96 w-full object-cover rounded"
           />
         )}
-
       </div>
 
       <h2 className="text-lg font-semibold mb-2">💬 댓글</h2>
@@ -124,6 +157,4 @@ const ReviewDetail = () => {
       </div>
     </div>
   );
-};
-
-export default ReviewDetail;
+  };
