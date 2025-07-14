@@ -5,11 +5,16 @@ import './Navbar.css';
 
 function Navbar() {
   const [user, setUser] = useState(null);
+  const [isApp, setIsApp] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation(); // ✅ 현재 URL 감지
+  const location = useLocation();
 
   useEffect(() => {
-    // ✅ URL 변경 시마다 세션 확인
+    const userAgent = navigator.userAgent || navigator.vendor;
+    if (userAgent.includes("MyAppWebView")) {
+      setIsApp(true);
+    }
+
     axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php`, {
       withCredentials: true
     })
@@ -23,7 +28,7 @@ function Navbar() {
     .catch(() => {
       setUser(null);
     });
-  }, [location.pathname]); // ✅ 페이지 이동마다 useEffect 재실행
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     try {
@@ -39,7 +44,7 @@ function Navbar() {
   };
 
   return (
-    <nav className="navbar">
+    <nav className={`navbar ${isApp ? "app" : "web"}`}>
       <div className="navbar-logo">
         <Link to="/">🏨 멜버른트램가이드</Link>
       </div>

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // ✅ axios 불러오기
+import axios from "axios";
 import "./mainpage.css";
 
 const MainPage = () => {
   const [isApp, setIsApp] = useState(false);
-  const [user, setUser] = useState(null); // ✅ 사용자 상태 저장
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,57 +14,35 @@ const MainPage = () => {
       setIsApp(true);
     }
 
-    // ✅ 로그인 상태 확인
-axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php`, {
-  withCredentials: true
-})
-.then((res) => {
-  console.log("✅ 세션 체크 응답:", res.data); // 이거 먼저 찍어보세요!
-  if (res.data.loggedIn) {
-    setUser(res.data.user);
-  }
-})
-.catch((err) => {
-  console.error("세션 확인 중 오류 발생:", err);
-});
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php`, {
+      withCredentials: true,
+    })
+    .then((res) => {
+      if (res.data.loggedIn) {
+        setUser(res.data.user);
+      }
+    })
+    .catch((err) => {
+      console.error("세션 확인 중 오류 발생:", err);
+    });
   }, []);
-
-  const handleStart = () => {
-    navigate("/stations");
-  };
-
-  const handleRanking = () => {
-    navigate("/ranking");
-  };
-
-    const handleLatestReviews = () => {
-    navigate("/latest-reviews");
-  };
 
   return (
     <div className={`mainpage ${isApp ? "app" : "web"}`}>
-      <div className="overlay" />
-      <div className="content">
-        <h1>Welcome to Our Service</h1>
-        <p>Explore Melbourne’s Tram-based Attractions</p>
+      <div className="main-overlay" />
+      <div className="main-content">
+        <h1 className="main-title">멜버른 트램 명소 가이드</h1>
+        <p className="main-subtitle">우리만의 여정을 지금 바로 시작해보세요</p>
 
-        {user ? (
-          <p style={{ marginTop: "10px", color: "#fff" }}>
-            안녕하세요, <strong>{user.name}</strong>님!
-          </p>
-        ) : (
-          <p style={{ marginTop: "10px", color: "#fff" }}>
-            로그인 후 이용해주세요.
-          </p>
+        {user && (
+          <p className="welcome-user">안녕하세요, <strong>{user.name}</strong>님!</p>
         )}
 
-        <button onClick={handleStart}>Get Started</button>
-        <button onClick={handleRanking} style={{ marginTop: "10px" }}>
-          🏆 스탬프 랭킹 보기
-        </button>
-                <button onClick={handleLatestReviews} style={{ marginTop: "10px" }}>
-          🆕 최신 리뷰들 보기
-        </button>
+        <div className="main-buttons">
+          <button onClick={() => navigate("/stations")}>📍 스탬프 찍기</button>
+          <button onClick={() => navigate("/ranking")}>🏆 랭킹 보기</button>
+          <button onClick={() => navigate("/latest-reviews")}>🆕 최신 리뷰</button>
+        </div>
       </div>
     </div>
   );
