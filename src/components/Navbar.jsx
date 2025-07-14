@@ -56,7 +56,7 @@ function Navbar() {
             <span
               onClick={handleLogout}
               className="navbar-link"
-              style={{ cursor: "pointer", marginLeft: "1rem" }}
+              style={{ cursor: "pointer" }}
             >
               Logout
             </span>
