@@ -20,3 +20,18 @@ export const fetchPlacesByStationId = async (stationId) => {
     return [];
   }
 };
+
+export const fetchRouteRecommendation = async ({ interest, time }) => {
+  try {
+    const res = await axios.post(
+      `${process.env.REACT_APP_API_BASE_URL}/getRouteRecommendation.php`,
+      { interest, time }
+    );
+    return res.data;
+  } catch (err) {
+    console.error("추천 경로 불러오기 실패:", err);
+    throw err;
+  }
+};
+
+console.log("API BASE URL:", process.env.REACT_APP_API_BASE_URL);

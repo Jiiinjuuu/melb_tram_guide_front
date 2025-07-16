@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import 'leaflet/dist/leaflet.css';
-import Navbar from "./components/Navbar"; // 상단바 컴포넌트
+import Navbar from "./components/Navbar";
 import MainPage from "./pages/MainPage/mainpage";
 import MyPage from "./pages/MyPage/mypage";
 import StationList from "./pages/Stations/StationList";
@@ -14,12 +14,13 @@ import PlaceReviewForm from './pages/PostReview/PlaceReviewForm';
 import ReviewDetail from './pages/ReviewDetail/ReviewDetail';
 import StampPage from './pages/StampPage/stamp_page';
 import StampRanking from './pages/StampRanking/stamp_ranking';
-import LatestReviewsPage from './pages/LatestReviewsPage/LatestReviewsPage'; // ✅ 새 페이지 import
+import LatestReviewsPage from './pages/LatestReviewsPage/LatestReviewsPage';
+import RouteRecommendation from './pages/RouteRecommendation/RouteRecommendation';
 
 function App() {
   return (
     <Router>
-      <Navbar /> 
+      <Navbar />
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/my-page" element={<MyPage />} />
@@ -34,6 +35,7 @@ function App() {
         <Route path="/stamp/:place_id" element={<StampPage />} />
         <Route path="/ranking" element={<StampRanking />} />
         <Route path="/latest-reviews" element={<LatestReviewsPage />} />
+        <Route path="/route-recommendation" element={<RouteRecommendation />} />
       </Routes>
     </Router>
   );

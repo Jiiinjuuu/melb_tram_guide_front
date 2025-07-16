@@ -5,16 +5,11 @@ import './Navbar.css';
 
 function Navbar() {
   const [user, setUser] = useState(null);
-  const [isApp, setIsApp] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
+  const location = useLocation(); // ✅ 현재 URL 감지
 
   useEffect(() => {
-    const userAgent = navigator.userAgent || navigator.vendor;
-    if (userAgent.includes("MyAppWebView")) {
-      setIsApp(true);
-    }
-
+    // ✅ URL 변경 시마다 세션 확인
     axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php`, {
       withCredentials: true
     })
@@ -28,7 +23,7 @@ function Navbar() {
     .catch(() => {
       setUser(null);
     });
-  }, [location.pathname]);
+  }, [location.pathname]); // ✅ 페이지 이동마다 useEffect 재실행
 
   const handleLogout = async () => {
     try {
@@ -44,7 +39,7 @@ function Navbar() {
   };
 
   return (
-    <nav className={`navbar ${isApp ? "app" : "web"}`}>
+    <nav className="navbar">
       <div className="navbar-logo">
         <Link to="/">🏨 멜버른트램가이드</Link>
       </div>
@@ -56,7 +51,7 @@ function Navbar() {
             <span
               onClick={handleLogout}
               className="navbar-link"
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", marginLeft: "1rem" }}
             >
               Logout
             </span>

@@ -1,0 +1,87 @@
+/* 공통 설정 */
+.signup-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  font-family: 'Noto Sans KR', sans-serif;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.signup-form {
+  width: 100%;
+  background-color: #fff;
+  padding: 40px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 웹 전용: 오른쪽 정렬 + margin-right */
+.signup-container.web {
+  align-items: flex-end;
+  padding-top: 56px;
+  min-height: calc(100vh - 56px);
+}
+
+.signup-container.web .signup-form {
+  max-width: 500px;
+  margin-top: 50px;
+  margin-right: 100px;
+  height: 76vh;
+}
+
+/* 앱 전용: 가운데 정렬 + 넓은 너비 */
+.signup-container.app {
+  align-items: center;
+  padding-top: 50px;
+  min-height: calc(100vh - 50px);
+}
+
+.signup-container.app .signup-form {
+  width: 100%;
+  max-width: 90%;
+  margin-top: 30px;
+}
+
+/* 인풋 필드 */
+.signup-form input {
+  padding: 14px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.signup-form input:focus {
+  border-color: #007bff;
+}
+
+/* 버튼 */
+.signup-form button {
+  padding: 14px;
+  font-size: 1.05rem;
+  font-weight: bold;
+  background-color: #111;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.signup-form button:hover {
+  background-color: #333;
+}
+
+/* 메시지 */
+.message {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #d00;
+  text-align: right;
+}

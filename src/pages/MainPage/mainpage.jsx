@@ -4,44 +4,38 @@ import axios from "axios";
 import "./mainpage.css";
 
 const MainPage = () => {
-  const [isApp, setIsApp] = useState(false);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userAgent = navigator.userAgent || navigator.vendor;
-    if (userAgent.includes("MyAppWebView")) {
-      setIsApp(true);
-    }
-
     axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php`, {
-      withCredentials: true,
+      withCredentials: true
     })
     .then((res) => {
       if (res.data.loggedIn) {
         setUser(res.data.user);
       }
     })
-    .catch((err) => {
-      console.error("세션 확인 중 오류 발생:", err);
-    });
+    .catch(() => {});
   }, []);
 
   return (
-    <div className={`mainpage ${isApp ? "app" : "web"}`}>
-      <div className="main-overlay" />
-      <div className="main-content">
-        <h1 className="main-title">멜버른 트램 명소 가이드</h1>
-        <p className="main-subtitle">우리만의 여정을 지금 바로 시작해보세요</p>
-
+    <div className="mainpage-modern">
+      <header className="main-header">
+        <span className="main-logo">🚋</span>
+        <span className="main-title">Melbourne Tram Guide</span>
+      </header>
+      <div className="main-card">
+        <h1>여행을 더 특별하게</h1>
+        <p className="main-desc">AI가 추천하는 멜버른 트램 여행 코스<br/>나만의 맞춤 루트를 지금 만나보세요!</p>
         {user && (
-          <p className="welcome-user">안녕하세요, <strong>{user.name}</strong>님!</p>
+          <p className="main-user">안녕하세요, <strong>{user.name}</strong>님!</p>
         )}
-
-        <div className="main-buttons">
-          <button onClick={() => navigate("/stations")}>📍 스탬프 찍기</button>
-          <button onClick={() => navigate("/ranking")}>🏆 랭킹 보기</button>
-          <button onClick={() => navigate("/latest-reviews")}>🆕 최신 리뷰</button>
+        <div className="main-actions">
+          <button className="main-btn" onClick={() => navigate("/stations")}>🚏 역/장소 둘러보기</button>
+          <button className="main-btn" onClick={() => navigate("/route-recommendation")}>🤖 AI 루트 추천</button>
+          <button className="main-btn" onClick={() => navigate("/ranking")}>🏆 스탬프 랭킹</button>
+          <button className="main-btn" onClick={() => navigate("/latest-reviews")}>📰 최신 리뷰</button>
         </div>
       </div>
     </div>
