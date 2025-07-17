@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const ReviewDetail = () => {
   const { id } = useParams(); // review_id
+  const navigate = useNavigate();
   const [review, setReview] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
-  const [currentUserId, setCurrentUserId] = useState(null); // ✅ 로그인 사용자 ID
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   // ✅ 로그인 사용자 확인
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php`,  {
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php`, {
       withCredentials: true
     })
     .then(res => {
@@ -21,6 +22,7 @@ const ReviewDetail = () => {
     });
   }, []);
 
+  // ✅ 후기 및 댓글 불러오기
   useEffect(() => {
     axios.get(`${process.env.REACT_APP_API_BASE_URL}/getReviewById.php?review_id=${id}`)
       .then(res => setReview(res.data))
@@ -65,6 +67,28 @@ const ReviewDetail = () => {
     });
   };
 
+  const handleDeleteReview = () => {
+    if (!window.confirm('정말 후기를 삭제하시겠습니까?')) return;
+
+    axios.post(`${process.env.REACT_APP_API_BASE_URL}/deleteReview.php`, {
+      review_id: id
+    }, {
+      withCredentials: true
+    })
+    .then(res => {
+      if (res.data.status === 'success') {
+        alert('후기가 삭제되었습니다.');
+        navigate(-1); // 이전 페이지로 이동
+      } else {
+        alert(res.data.error || '삭제 실패');
+      }
+    })
+    .catch(err => {
+      console.error('리뷰 삭제 오류:', err);
+      alert('삭제 중 오류가 발생했습니다.');
+    });
+  };
+
   if (!review) return <div className="p-4">Loading...</div>;
 
   return (
@@ -86,6 +110,17 @@ const ReviewDetail = () => {
           />
         )}
 
+        {/* ✅ 본인일 경우 후기 삭제 버튼 */}
+        {review.user_id === currentUserId && (
+          <div className="text-right mt-4">
+            <button
+              onClick={handleDeleteReview}
+              className="px-3 py-1 text-sm text-white bg-red-600 hover:bg-red-700 rounded"
+            >
+              후기 삭제
+            </button>
+          </div>
+        )}
       </div>
 
       <h2 className="text-lg font-semibold mb-2">💬 댓글</h2>
