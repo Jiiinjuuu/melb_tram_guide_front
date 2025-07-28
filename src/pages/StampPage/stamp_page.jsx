@@ -10,8 +10,8 @@ const StampPage = () => {
   useEffect(() => {
     const checkAndAddStamp = async () => {
       try {
-        // ✅ 세션 확인
-        const session = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php`, {
+        // ✅ 먼저 세션 확인
+        const session = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/session_check.php` , {
           withCredentials: true
         });
 
@@ -21,29 +21,26 @@ const StampPage = () => {
           return;
         }
 
-        // ✅ 스탬프 확인 및 등록 요청
+        // ✅ 스탬프 확인/등록 요청 (user_id는 보내지 않음!)
         const res = await axios.post(
-          `${process.env.REACT_APP_API_BASE_URL}/stamp_check.php`,
+          `${process.env.REACT_APP_API_BASE_URL}/stamp_check.php` ,
           { place_id },
           { withCredentials: true }
         );
 
-        // ✅ 응답 처리 분기
         if (res.data.status === 'new') {
           setMessage('🎉 스탬프를 획득하셨습니다!');
+          setTimeout(() => {
+            navigate(`/place/${place_id}`);
+          }, 5000);
         } else if (res.data.status === 'exists') {
           setMessage('✅ 이미 스탬프를 획득하셨습니다!');
-        } else if (res.data.status === 'no_image') {
-          setMessage('📸 이미지를 포함한 후기만 스탬프를 받을 수 있어요!');
+          setTimeout(() => {
+            navigate(`/place/${place_id}`);
+          }, 5000);
         } else {
           setMessage('⚠️ 오류가 발생했습니다. 다시 시도해주세요.');
         }
-
-        // ✅ 5초 후 돌아가기
-        setTimeout(() => {
-          navigate(`/place/${place_id}`);
-        }, 5000);
-        
       } catch (error) {
         setMessage('❌ 서버 오류입니다.');
         console.error(error);
