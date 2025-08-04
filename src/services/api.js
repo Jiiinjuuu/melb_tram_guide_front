@@ -33,3 +33,5 @@ export const fetchRouteRecommendation = async ({ interest, time, latitude, longi
     throw err;
   }
 };
+
+console.log("API BASE URL:", process.env.REACT_APP_API_BASE_URL);
