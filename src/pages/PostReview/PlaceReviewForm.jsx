@@ -135,28 +135,34 @@ const PlaceReviewForm = () => {
             </div>
           </div>
 
-          <div className="input-group">
-            <label className="input-label">사진 첨부 (선택사항)</label>
-            <div className="image-upload">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="image-input"
-                disabled={isLoading}
-              />
-              <div className="image-preview">
-                {previewUrl ? (
-                  <img src={previewUrl} alt="미리보기" className="preview-image" />
-                ) : (
-                  <div className="upload-placeholder">
-                    <span className="upload-icon">📷</span>
-                    <span className="upload-text">사진을 선택하세요</span>
-                  </div>
-                )}
-              </div>
-            </div>
+        <div className="input-group">
+          <label className="input-label">사진 첨부 (선택사항)</label>
+
+          <div className="image-upload">
+            {/* 👇 label로 감싸서 input 클릭 가능하게 처리 */}
+            <label htmlFor="image-upload-input" className="image-preview">
+              {previewUrl ? (
+                <img src={previewUrl} alt="미리보기" className="preview-image" />
+              ) : (
+                <div className="upload-placeholder">
+                  <span className="upload-icon">📷</span>
+                  <span className="upload-text">사진을 선택하세요</span>
+                </div>
+              )}
+            </label>
+
+            {/* 👇 실제 input은 숨김 처리되며 label을 클릭하면 작동 */}
+            <input
+              id="image-upload-input"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="image-input"
+              disabled={isLoading}
+            />
           </div>
+        </div>
+
 
           <div className="review-actions">
             <button 
