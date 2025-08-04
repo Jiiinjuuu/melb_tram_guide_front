@@ -199,6 +199,14 @@ const RouteRecommendation = () => {
           </div>
         </div>
 
+
+          {story && (
+    <div className="general-story" style={{ background: '#eef3f8', padding: '16px', borderRadius: '10px', marginTop: '20px', fontSize: '15px', lineHeight: '1.6' }}>
+      <h3 style={{ marginBottom: '10px', color: '#333' }}>🗺️ 여행 개요</h3>
+      <div style={{ whiteSpace: 'pre-line' }}>{story}</div>
+    </div>
+  )}
+  
         <div className="route-details">
           {route.map((place, index) => (
             <div key={place.id || index} className="route-place">
