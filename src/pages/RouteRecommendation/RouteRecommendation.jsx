@@ -184,7 +184,6 @@ const RouteRecommendation = () => {
     const totalHours = Math.floor(summary.total_time / 60);
     const totalMinutes = summary.total_time % 60;
     const displayStory = detailed_story || story || "";
-    const storyLines = displayStory.split(/\n|\r|<br\s*\/?>/);
 
     return (
       <div className="recommendation-container">
@@ -210,9 +209,6 @@ const RouteRecommendation = () => {
                 <div className="place-meta">
                   <span>🏷️ {place.type}</span>
                   <span>⏱️ {place.estimated_time || 60}분</span>
-                </div>
-                <div style={{ color: '#222', fontWeight: 500, marginTop: 8, fontSize: '14px', lineHeight: '1.4' }}>
-                  {storyLines.find(line => line.trim().startsWith(`${index + 1}.`)) || storyLines.find(line => line.includes(place.name))}
                 </div>
               </div>
             </div>
