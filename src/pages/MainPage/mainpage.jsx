@@ -71,7 +71,7 @@ const MainPage = () => {
             <div className="feature-icon">🚏</div>
             <h3 className="feature-title">{t('exploreStations')}</h3>
             <p className="feature-description">
-              멜버른 35번 트램 정류장과 주변 명소들을 탐색해보세요
+              멜버른 트램 정류장과 주변 명소들을 탐색해보세요
             </p>
           </div>
 
