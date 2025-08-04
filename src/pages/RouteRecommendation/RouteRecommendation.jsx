@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import './RouteRecommendation.css';
 import { fetchRouteRecommendation } from '../../services/api';
+import './RouteRecommendation.css';
 
 const RouteRecommendation = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     interests: [],
-    duration: '', // 기본 선택 없음
-    activity_level: '', // 기본 선택 없음
+    duration: '',
+    activity_level: '',
     start_station: null
   });
   const [recommendation, setRecommendation] = useState(null);
@@ -19,22 +18,19 @@ const RouteRecommendation = () => {
   const [showRecommendBtn, setShowRecommendBtn] = useState(false);
   const [loadingDone, setLoadingDone] = useState(false);
   const [userLocation, setUserLocation] = useState({ lat: null, lng: null });
-  const [locationStatus, setLocationStatus] = useState('pending'); // 'pending' | 'success' | 'error'
+  const [locationStatus, setLocationStatus] = useState('pending');
 
   React.useEffect(() => {
     if (!('geolocation' in navigator)) {
       setLocationStatus('error');
       return;
     }
-    setLocationStatus('pending');
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         setLocationStatus('success');
       },
-      (err) => {
-        setLocationStatus('error');
-      },
+      () => setLocationStatus('error'),
       { enableHighAccuracy: true, timeout: 10000 }
     );
   }, []);
@@ -79,14 +75,12 @@ const RouteRecommendation = () => {
         setLoadingDone(true);
         setShowLoading(false);
         setShowRecommendBtn(true);
-      }, 3000); // 3초 후 완료
+      }, 3000);
     }
   };
 
   const handleBack = () => {
-    if (step > 1) {
-      setStep(step - 1);
-    }
+    if (step > 1) setStep(step - 1);
   };
 
   const getRecommendation = async () => {
@@ -116,110 +110,60 @@ const RouteRecommendation = () => {
 
   const renderStep = () => {
     const showBack = step > 1;
-    // step 3에서 로딩/추천받기 분기
-    if (step === 3) {
-      if (showLoading || showRecommendBtn) {
-        return (
-          <div className="step-container">
-            <h2>
-              {loadingDone ? "✅ 추천 루트 생성 완료!" : "🚀 추천 루트 생성 중..."}
-            </h2>
-            <p>
-              {loadingDone
-                ? "선택하신 조건에 맞는 최적의 루트를 찾았습니다"
-                : "선택하신 조건에 맞는 최적의 루트를 찾고 있습니다"}
-            </p>
-            {showLoading && (
-              <div className="loading-spinner">
-                <div className="spinner"></div>
-              </div>
-            )}
-            {showRecommendBtn && (
-              <button
-                onClick={getRecommendation}
-                className="btn-primary"
-                style={{ margin: "0 auto", display: "block" }}
-              >
-                추천받기
-              </button>
-            )}
-          </div>
-        );
-      }
+    if (step === 3 && (showLoading || showRecommendBtn)) {
+      return (
+        <div className="step-container">
+          <h2>{loadingDone ? "✅ 추천 루트 생성 완료!" : "🚀 추천 루트 생성 중..."}</h2>
+          <p>{loadingDone ? "선택하신 조건에 맞는 최적의 루트를 찾았습니다" : "선택하신 조건에 맞는 최적의 루트를 찾고 있습니다"}</p>
+          {showLoading && <div className="loading-spinner"><div className="spinner"></div></div>}
+          {showRecommendBtn && <button onClick={getRecommendation} className="btn-primary">추천받기</button>}
+        </div>
+      );
     }
-    // 설문 단계(1~2) 렌더링
+
     return (
       <div className="step-container">
-        {/* 기존 질문/옵션 렌더링 */}
-        {(() => {
-          switch (step) {
-            case 1:
-              return (
-                <>
-                  <h2>🎯 관심 분야를 선택해주세요</h2>
-                  <p>여러 개 선택 가능합니다</p>
-                  <div className="options-grid">
-                    {interestOptions.map(option => (
-                      <button
-                        key={option.id}
-                        className={`option-button ${formData.interests.includes(option.id) ? 'selected' : ''}`}
-                        onClick={() => handleInterestToggle(option.id)}
-                      >
-                        <span className="option-icon">{option.icon}</span>
-                        <span className="option-label">{option.label}</span>
-                        {formData.interests.includes(option.id) && (
-                          <span className="selected-check">✔️</span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              );
-            case 2:
-              return (
-                <>
-                  <h2>⏱️ 소요 시간을 선택해주세요</h2>
-                  <div className="options-list">
-                    {durationOptions.map(option => (
-                      <button
-                        key={option.id}
-                        className={`option-button ${formData.duration === option.id ? 'selected' : ''}`}
-                        onClick={() => setFormData(prev => ({ ...prev, duration: option.id }))}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              );
-            case 3:
-              return (
-                <>
-                  <h2>🚶 활동 강도를 선택해주세요</h2>
-                  <div className="options-list">
-                    {activityOptions.map(option => (
-                      <button
-                        key={option.id}
-                        className={`option-button ${formData.activity_level === option.id ? 'selected' : ''}`}
-                        onClick={() => setFormData(prev => ({ ...prev, activity_level: option.id }))}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              );
-            default:
-              return null;
-          }
-        })()}
-        {/* 하단 버튼 */}
+        {step === 1 && (
+          <>
+            <h2>🎯 관심 분야를 선택해주세요</h2>
+            <p>여러 개 선택 가능합니다</p>
+            <div className="options-grid">
+              {interestOptions.map(option => (
+                <button key={option.id} className={`option-button ${formData.interests.includes(option.id) ? 'selected' : ''}`} onClick={() => handleInterestToggle(option.id)}>
+                  <span className="option-icon">{option.icon}</span>
+                  <span className="option-label">{option.label}</span>
+                  {formData.interests.includes(option.id) && <span className="selected-check">✔️</span>}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+        {step === 2 && (
+          <>
+            <h2>⏱️ 소요 시간을 선택해주세요</h2>
+            <div className="options-list">
+              {durationOptions.map(option => (
+                <button key={option.id} className={`option-button ${formData.duration === option.id ? 'selected' : ''}`} onClick={() => setFormData(prev => ({ ...prev, duration: option.id }))}>
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+        {step === 3 && (
+          <>
+            <h2>🚶 활동 강도를 선택해주세요</h2>
+            <div className="options-list">
+              {activityOptions.map(option => (
+                <button key={option.id} className={`option-button ${formData.activity_level === option.id ? 'selected' : ''}`} onClick={() => setFormData(prev => ({ ...prev, activity_level: option.id }))}>
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
         <div className="navigation-buttons-card">
-          {showBack ? (
-            <button onClick={handleBack} className="btn-secondary">
-              이전
-            </button>
-          ) : <div />}
+          {showBack ? <button onClick={handleBack} className="btn-secondary">이전</button> : <div />}
           <button
             onClick={handleNext}
             className="btn-primary"
@@ -228,9 +172,7 @@ const RouteRecommendation = () => {
               (step === 2 && !formData.duration) ||
               (step === 3 && !formData.activity_level)
             }
-          >
-            다음
-          </button>
+          >다음</button>
         </div>
       </div>
     );
@@ -238,19 +180,15 @@ const RouteRecommendation = () => {
 
   const renderRecommendation = () => {
     if (!recommendation) return null;
-
     const { route, summary, story, detailed_story } = recommendation;
     const totalHours = Math.floor(summary.total_time / 60);
     const totalMinutes = summary.total_time % 60;
-
-    // detailed_story가 있으면 사용, 없으면 기존 story 사용
     const displayStory = detailed_story || story || "";
-    const storyLines = displayStory.split(/\n|\r|<br\s*\/?\s*>/);
+    const storyLines = displayStory.split(/\n|\r|<br\s*\/?>/);
 
     return (
       <div className="recommendation-container">
         <h2>🚀 추천 루트</h2>
-
         <div className="route-summary">
           <div className="summary-item">
             <span className="summary-icon">⏱️</span>
@@ -258,11 +196,7 @@ const RouteRecommendation = () => {
           </div>
           <div className="summary-item">
             <span className="summary-icon">🚶</span>
-            <span>총 거리: {summary.total_distance.toFixed(1)}km</span>
-          </div>
-          <div className="summary-item">
-            <span className="summary-icon">🎖️</span>
-            <span>스탬프 획득: {summary.stamp_count}개</span>
+            <span>총 거리: {Number(summary.total_distance).toFixed(1)}km</span>
           </div>
         </div>
 
@@ -276,40 +210,25 @@ const RouteRecommendation = () => {
                 <div className="place-meta">
                   <span>🏷️ {place.type}</span>
                   <span>⏱️ {place.estimated_time || 60}분</span>
-                  {place.is_stampPlace === 1 && <span>🎖️ 스탬프</span>}
                 </div>
-                {/* 각 장소별 상세 설명 표시 */}
                 <div style={{ color: '#222', fontWeight: 500, marginTop: 8, fontSize: '14px', lineHeight: '1.4' }}>
-                  {storyLines.find(line => line.trim().startsWith(`${index + 1}.`)) || 
-                   storyLines.find(line => line.includes(place.name))}
+                  {storyLines.find(line => line.trim().startsWith(`${index + 1}.`)) || storyLines.find(line => line.includes(place.name))}
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* 전체 경로 상세 설명 */}
         {detailed_story && (
-          <div className="detailed-story" style={{ 
-            background: '#f8f9fa', 
-            padding: '20px', 
-            borderRadius: '12px', 
-            marginTop: '20px',
-            fontSize: '14px',
-            lineHeight: '1.6'
-          }}>
+          <div className="detailed-story" style={{ background: '#f8f9fa', padding: '20px', borderRadius: '12px', marginTop: '20px', fontSize: '14px', lineHeight: '1.6' }}>
             <h3 style={{ marginBottom: '15px', color: '#333' }}>📖 상세 여행 가이드</h3>
             <div style={{ whiteSpace: 'pre-line' }}>{detailed_story}</div>
           </div>
         )}
 
         <div className="action-buttons">
-          <button onClick={() => navigate('/stations')} className="btn-primary">
-            지도에서 보기
-          </button>
-          <button onClick={() => setStep(1)} className="btn-secondary">
-            다시 추천받기
-          </button>
+          <button onClick={() => navigate('/stations')} className="btn-primary">지도에서 보기</button>
+          <button onClick={() => setStep(1)} className="btn-secondary">다시 추천받기</button>
         </div>
       </div>
     );
@@ -318,32 +237,21 @@ const RouteRecommendation = () => {
   return (
     <div className="route-recommendation">
       <div className="header">
-        <button onClick={() => navigate('/')} className="back-button">
-          ← 돌아가기
-        </button>
+        <button onClick={() => navigate('/')} className="back-button">← 돌아가기</button>
         <h1>AI 루트 추천</h1>
       </div>
 
       <div className="progress-bar">
-        <div 
-          className="progress-fill" 
-          style={{ width: `${(step / 4) * 100}%` }}
-        ></div>
+        <div className="progress-fill" style={{ width: `${(step / 4) * 100}%` }}></div>
       </div>
 
       <div className="content">
-        {locationStatus === 'pending' && (
-          <div style={{ color: '#888', marginBottom: 8 }}>📡 현재 위치를 불러오는 중...</div>
-        )}
-        {locationStatus === 'error' && (
-          <div style={{ color: 'red', marginBottom: 8 }}>⚠️ 위치 권한이 거부되었거나 위치 정보를 가져올 수 없습니다.</div>
-        )}
+        {locationStatus === 'pending' && <div style={{ color: '#888', marginBottom: 8 }}>📡 현재 위치를 불러오는 중...</div>}
+        {locationStatus === 'error' && <div style={{ color: 'red', marginBottom: 8 }}>⚠️ 위치 권한이 거부되었거나 위치 정보를 가져올 수 없습니다.</div>}
         {recommendation ? renderRecommendation() : renderStep()}
       </div>
-
-      {/* navigation-buttons 제거 */}
     </div>
   );
 };
 
-export default RouteRecommendation; 
+export default RouteRecommendation;
