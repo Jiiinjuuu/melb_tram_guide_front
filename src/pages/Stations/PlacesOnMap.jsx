@@ -15,7 +15,7 @@ const PlacesOnMap = () => {
   // 1. 정류장 아이콘
   const tramIcon = L.icon({
     iconUrl: "/img/tram-pin.png",
-    iconSize: [70, 70], // 너비, 높이
+    iconSize: [40, 40], // 너비, 높이
     iconAnchor: [20, 40], // 마커 포인트
     popupAnchor: [0, -35], // 팝업 위치 조정
   });
@@ -23,7 +23,7 @@ const PlacesOnMap = () => {
   // 2. 명소 아이콘
   const placeIcon = L.icon({
     iconUrl: "/img/place.png",
-    iconSize: [70, 70],
+    iconSize: [40, 40],
     iconAnchor: [15, 30],
     popupAnchor: [0, -25],
   });
@@ -31,7 +31,7 @@ const PlacesOnMap = () => {
   // 3. 스탬프 명소 아이콘
 const stampIcon = L.icon({
   iconUrl: "/img/stamp_pin.png",  // 스탬프 마커 이미지 경로
-  iconSize: [70, 70],
+  iconSize: [40, 40],
   iconAnchor: [15, 30],
   popupAnchor: [0, -25],
 });
