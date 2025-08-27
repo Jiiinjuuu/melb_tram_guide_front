@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import Toast from '../../components/Toast';
@@ -13,6 +13,10 @@ const PlaceDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [toast, setToast] = useState(null);
+
+  // 여기서 activeTab 상태를 선언
+  const [activeTab, setActiveTab] = useState('reviews'); // 기본값 'reviews'
+
   const navigate = useNavigate();
   const { t } = useLanguage();
 
@@ -47,7 +51,7 @@ const PlaceDetail = () => {
     if (id) {
       fetchData();
     }
-  }, [id]); 
+  }, [id]);
 
   const handleReviewWrite = async () => {
     try {
