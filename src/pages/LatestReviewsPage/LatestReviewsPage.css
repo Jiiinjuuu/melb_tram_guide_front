@@ -33,9 +33,9 @@ body {
 }
 
 /* Reviews Section */
-.space-y-4 {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+/* 기존 .space-y-4 수정 */
+.space-y-4 > li {
+  margin-bottom: 1rem; /* 각 리뷰 카드 간의 간격을 1rem로 설정 */
 }
 
 .bg-white {

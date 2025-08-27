@@ -4,6 +4,7 @@ import axios from 'axios';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import Toast from '../../components/Toast';
 import { useLanguage } from '../../i18n/LanguageContext';
+import "./PlaceDetail.css";
 
 const PlaceDetail = () => {
   const { id } = useParams();
