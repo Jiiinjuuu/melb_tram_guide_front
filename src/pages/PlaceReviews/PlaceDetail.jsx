@@ -8,15 +8,11 @@ import "./PlaceDetail.css";
 
 const PlaceDetail = () => {
   const { id } = useParams();
-  const [place, setPlace] = useState(null);
   const [reviews, setReviews] = useState([]);
-  const [googleInfo, setGoogleInfo] = useState(null);
-  const [googlePhotos, setGooglePhotos] = useState([]);
   const [googleReviews, setGoogleReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [toast, setToast] = useState(null);
-  const [activeTab, setActiveTab] = useState('info'); // 'info', 'photos', 'reviews'
   const navigate = useNavigate();
   const { t } = useLanguage();
 
@@ -26,32 +22,21 @@ const PlaceDetail = () => {
         setLoading(true);
         setError(null);
 
-        // 명소 정보, 리뷰, Google Place 정보를 병렬로 가져오기
-        const [placeRes, reviewsRes, googleRes] = await Promise.all([
-          axios.get(`${process.env.REACT_APP_API_BASE_URL}/getPlaceDetails.php?place_id=${id}`),
+        // 리뷰, Google Place 리뷰 데이터를 병렬로 가져오기
+        const [reviewsRes, googleRes] = await Promise.all([
           axios.get(`${process.env.REACT_APP_API_BASE_URL}/getReviews.php?place_id=${id}`),
           axios.get(`${process.env.REACT_APP_API_BASE_URL}/getGooglePlaceInfo.php?place_id=${id}`)
         ]);
 
-        setPlace(placeRes.data);
         setReviews(reviewsRes.data);
-        
-        // Google Place 정보 설정
-        if (googleRes.data.google_info) {
-          setGoogleInfo(googleRes.data.google_info);
-        }
-        if (googleRes.data.google_photos) {
-          setGooglePhotos(googleRes.data.google_photos);
-        }
         if (googleRes.data.google_reviews) {
           setGoogleReviews(googleRes.data.google_reviews);
         }
-
       } catch (err) {
         console.error('데이터 불러오기 오류:', err);
-        setError(err.message || '명소 정보를 불러오는 중 오류가 발생했습니다.');
+        setError(err.message || '리뷰 정보를 불러오는 중 오류가 발생했습니다.');
         setToast({
-          message: err.message || '명소 정보를 불러오는 중 오류가 발생했습니다.',
+          message: err.message || '리뷰 정보를 불러오는 중 오류가 발생했습니다.',
           type: 'error'
         });
       } finally {
@@ -90,68 +75,6 @@ const PlaceDetail = () => {
         navigate("/login");
       }, 2000);
     }
-  };
-
-  const renderGoogleInfo = () => {
-    if (!googleInfo) return null;
-
-    return (
-      <div className="google-info">
-        <h3 className="text-lg font-semibold mb-3">📍 Google Place 정보</h3>
-        <div className="grid grid-2 gap-4">
-          {googleInfo.formatted_address && (
-            <div className="info-item">
-              <strong>주소:</strong> {googleInfo.formatted_address}
-            </div>
-          )}
-          {googleInfo.formatted_phone_number && (
-            <div className="info-item">
-              <strong>전화번호:</strong> {googleInfo.formatted_phone_number}
-            </div>
-          )}
-          {googleInfo.website && (
-            <div className="info-item">
-              <strong>웹사이트:</strong> 
-              <a href={googleInfo.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">
-                방문하기
-              </a>
-            </div>
-          )}
-          {googleInfo.rating && (
-            <div className="info-item">
-              <strong>Google 평점:</strong> ⭐ {googleInfo.rating} ({googleInfo.user_ratings_total}개 평가)
-            </div>
-          )}
-          {googleInfo.opening_hours && (
-            <div className="info-item">
-              <strong>운영시간:</strong> {googleInfo.opening_hours.open_now ? '영업중' : '영업종료'}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const renderGooglePhotos = () => {
-    if (googlePhotos.length === 0) return null;
-
-    return (
-      <div className="google-photos">
-        <h3 className="text-lg font-semibold mb-3">📸 Google 사진</h3>
-        <div className="grid grid-3 gap-4">
-          {googlePhotos.map((photo, index) => (
-            <div key={index} className="photo-item">
-              <img 
-                src={photo.url} 
-                alt={`${place?.name} 사진 ${index + 1}`}
-                className="w-full h-48 object-cover rounded-lg"
-                loading="lazy"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
   };
 
   const renderGoogleReviews = () => {
@@ -212,24 +135,9 @@ const PlaceDetail = () => {
     );
   }
 
-  if (!place) {
-    return (
-      <div className="p-6 max-w-3xl mx-auto text-center">
-        <h2 className="text-xl font-bold text-gray-600 mb-4">명소를 찾을 수 없습니다</h2>
-        <button
-          onClick={() => navigate('/stations')}
-          className="btn-primary"
-        >
-          정류장 목록으로 돌아가기
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-2">{place.name}</h1>
-      <p className="mb-4 text-gray-700">{place.description}</p>
+      <h1 className="text-2xl font-bold mb-2">{t('reviews')}</h1>
 
       <div className="mb-6">
         <button
@@ -240,23 +148,9 @@ const PlaceDetail = () => {
         </button>
       </div>
 
-      {/* 탭 네비게이션 */}
+      {/* 탭 네비게이션 - 기본 정보 탭 제거 */}
       <div className="mb-6">
         <div className="flex border-b">
-          <button
-            onClick={() => setActiveTab('info')}
-            className={`px-4 py-2 ${activeTab === 'info' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}
-          >
-            📋 기본 정보
-          </button>
-          {googlePhotos.length > 0 && (
-            <button
-              onClick={() => setActiveTab('photos')}
-              className={`px-4 py-2 ${activeTab === 'photos' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}
-            >
-              📸 사진 ({googlePhotos.length})
-            </button>
-          )}
           <button
             onClick={() => setActiveTab('reviews')}
             className={`px-4 py-2 ${activeTab === 'reviews' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}
@@ -268,18 +162,6 @@ const PlaceDetail = () => {
 
       {/* 탭 콘텐츠 */}
       <div className="tab-content">
-        {activeTab === 'info' && (
-          <div>
-            {renderGoogleInfo()}
-          </div>
-        )}
-
-        {activeTab === 'photos' && (
-          <div>
-            {renderGooglePhotos()}
-          </div>
-        )}
-
         {activeTab === 'reviews' && (
           <div>
             {/* Google 리뷰 */}
